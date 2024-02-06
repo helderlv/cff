@@ -1,0 +1,8 @@
+const t=()=>new Promise((t,e)=>navigator.geolocation.getCurrentPosition(t,e)),e=(t,e)=>{document.querySelector(".min").textContent=`${t}\xb0C`,document.querySelector(".max").textContent=`${e}\xb0C`},o=t=>{let{stationboard:e}=t,o=e.map(t=>{let e=new Date(t.stop.departure),o=e.getHours(),a=e.getMinutes(),n=10>e.getHours()?"0"+o:o,r=10>e.getMinutes()?"0"+a:a;return{departure:`${n}:${r}`,destination:t.to,category:t.category}});return{station:t.station.name,departures:o}},a=t=>{let e=document.querySelector(".departures"),o=`
+    <article>
+        <div class="time">${t.departure}</div>
+        <div class="category" data-category="${t.category}">${t.category}</div>
+        <div class="destination">${t.destination}</div>
+    </article>
+    `;e.insertAdjacentHTML("beforeend",o)},n=t=>{document.querySelector(".departures header p").textContent=t};(async()=>{let e=await t();return{lat:e.coords.latitude,long:e.coords.longitude}})().then(t=>{console.log(t),fetch(`https://api.open-meteo.com/v1/forecast?latitude=${t.lat}&longitude=${t.long}&daily=apparent_temperature_max,apparent_temperature_min&timezone=auto`).then(t=>t.json()).then(t=>{console.log(t),e(t.daily.apparent_temperature_min[0],t.daily.apparent_temperature_max[0])}),fetch(`http://transport.opendata.ch/v1/locations?x=${t.lat}&y=${t.long}&type=station`).then(t=>t.json()).then(t=>{let e=t.stations.filter(t=>"train"===t.icon)[0];if(console.log(e),!e)throw Error("\uD83E\uDD72 No TRAIN STATIONS NEARBY");return console.log(e.name),n(e.name),fetch(`https://transport.opendata.ch/v1/stationboard?station=${e.name}&limit=5`)}).then(t=>t.json()).then(t=>{console.log(o(t));for(let e=0;e<o(t).departures.length;e++)a(o(t).departures[e])}).catch(t=>{n(t.message)})});
+//# sourceMappingURL=index.e7f5cbca.js.map
